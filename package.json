@@ -39,6 +39,8 @@
   "dependencies": {
     "commander": "^9.4.0",
     "get-stdin": "^9.0.0",
-    "node-fetch": "^3.2.9"
+    "lodash": "^4.17.21",
+    "node-fetch": "^3.2.9",
+    "rethinkdb": "^2.4.2"
   }
 }
