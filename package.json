@@ -1,0 +1,23 @@
+{
+  "name": "contact-pipeline",
+  "version": "0.1.0",
+  "description": "Load article metadata to create a contact list",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jvwong/contact-pipeline.git"
+  },
+  "keywords": [
+    "email",
+    "contact"
+  ],
+  "author": "jvwong",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jvwong/contact-pipeline/issues"
+  },
+  "homepage": "https://github.com/jvwong/contact-pipeline#readme"
+}
