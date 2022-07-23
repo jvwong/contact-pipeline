@@ -1,6 +1,6 @@
 import r from 'rethinkdb';
 import fs from 'fs';
-import * as config from './config';
+import * as config from '../config.js';
 
 const db = {
   connect: function () {
