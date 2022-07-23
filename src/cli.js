@@ -4,6 +4,7 @@
 import { writeFile } from 'fs/promises';
 import { program } from 'commander';
 import { load as loadImpl } from './load.js';
+import { json2csv } from './util/format.js';
 // import getStdin from 'get-stdin';
 
 const formatJSON = obj => JSON.stringify(obj, null, 2);
@@ -18,7 +19,7 @@ async function load (options) {
 
 async function sendOutput (data, options) {
   if (options.output) {
-    await writeCsv(data, options.output);
+    await writeCsv(json2csv(data), options.output);
   } else {
     printFormattedJSON(data);
   }
@@ -31,8 +32,7 @@ async function main () {
   );
 
   (program.command('load')
-    // .argument('<string>', 'string to use as search query')
-    .option('-o, --output <file>', 'JSON output file (standard output by default)')
+    .option('-o, --output <file>', 'Output file (standard output by default)')
     .option('-y, --year <year>', 'Limit by year')
     .description('load article metadata and send them to standard output or a file')
     .action(load)

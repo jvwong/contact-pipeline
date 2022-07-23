@@ -51,6 +51,5 @@ export async function load (options) {
   const cursor = await q.run(conn);
   const data = await cursor.toArray();
   conn.close(function (err) { if (err) throw err; });
-  // return json2csv(data);
   return data;
 }
