@@ -15,13 +15,9 @@ export async function load (start, end, options) {
   let q = table;
 
   // Filter by date
-  if (end != null) { // Set a publication date range
-    q = q.between(
-      start, end, { index: 'pub_date' }
-    );
-  } else { // Set a minimum publication date only
-    q = q.filter(doc => doc('pub_date').gt(start));
-  }
+  q = q.between(
+    start, end, { index: 'pub_date', rightBound: 'closed' }
+  );
 
   // Apply filters
   // const hasAuthorEmail = r.row('author_list').filter(function (author) { return author('emails').ne(null); }).count().gt(0);

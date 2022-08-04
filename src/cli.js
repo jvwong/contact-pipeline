@@ -12,6 +12,8 @@ const printFormattedJSON = obj => console.log(formatJSON(obj));
 const writeFormattedJSON = async (obj, file) => await writeFile(file, formatJSON(obj));
 const writeCsv = async (data, file) => await writeFile(file, data);
 
+const MAX_DATE_RETHINKDB = '9999-12-31';
+
 function toDate (str) {
   const d = new Date(str);
   if (isNaN(d)) {
@@ -22,11 +24,8 @@ function toDate (str) {
 }
 
 async function load (start, end, options) {
-  let endDate;
+  const endDate = end ? toDate(end) : toDate(MAX_DATE_RETHINKDB);
   const startDate = toDate(start);
-  if (end) {
-    endDate = toDate(end);
-  }
   const data = await loadImpl(startDate, endDate, options);
   await sendOutput(data, options);
 }
