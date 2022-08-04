@@ -12,8 +12,22 @@ const printFormattedJSON = obj => console.log(formatJSON(obj));
 const writeFormattedJSON = async (obj, file) => await writeFile(file, formatJSON(obj));
 const writeCsv = async (data, file) => await writeFile(file, data);
 
-async function load (options) {
-  const data = await loadImpl(options);
+function toDate (str) {
+  const d = new Date(str);
+  if (isNaN(d)) {
+    throw new Error('Invalid Date');
+  } else {
+    return d;
+  }
+}
+
+async function load (start, end, options) {
+  let endDate;
+  const startDate = toDate(start);
+  if (end) {
+    endDate = toDate(end);
+  }
+  const data = await loadImpl(startDate, endDate, options);
   await sendOutput(data, options);
 }
 
@@ -33,7 +47,8 @@ async function main () {
 
   (program.command('load')
     .option('-o, --output <file>', 'Output file (standard output by default)')
-    .option('-y, --year <year>', 'Limit by year')
+    .argument('<start>', 'start date (yyyy-mm-dd)')
+    .argument('[end]', 'end date (yyyy-mm-dd)')
     .description('load article metadata and send them to standard output or a file')
     .action(load)
   );
