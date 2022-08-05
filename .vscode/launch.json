@@ -1,15 +1,21 @@
 {
   "version": "0.2.0",
   "configurations": [
+
     {
       "type": "node",
       "request": "launch",
-      "name": "Template",
+      "name": "load",
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "program": "${workspaceFolder}/index.js",
+      "program": "${workspaceFolder}/contact-pipeline.js",
       "args": [
+        "load",
+        "-s",
+        "2022-08-01",
+        "-l",
+        "15"
       ],
       "console": "integratedTerminal"
     }

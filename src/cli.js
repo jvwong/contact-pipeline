@@ -14,6 +14,16 @@ const writeCsv = async (data, file) => await writeFile(file, data);
 
 const MAX_DATE_RETHINKDB = '9999-12-31';
 const MIN_DATE_RETHINKDB = '1400-01-01';
+const MAX_NUM_ITEMS = 100000;
+
+function myParseInt (value) {
+  // parseInt takes a string and a radix
+  const parsedValue = parseInt(value, 10);
+  if (isNaN(parsedValue)) {
+    throw new program.InvalidArgumentError('Not a number.');
+  }
+  return parsedValue;
+}
 
 function toDate (str) {
   const d = new Date(str);
@@ -46,9 +56,10 @@ async function main () {
   );
 
   (program.command('load')
-    .option('-o, --output <file>', 'Output file (standard output by default)')
-    .option('-s, --start <start>', 'Start date (yyyy-mm-dd)', MIN_DATE_RETHINKDB)
-    .option('-e, --end <end>', 'End date (yyyy-mm-dd)', MAX_DATE_RETHINKDB)
+    .option('-o, --output <str>', 'Output file (stdout by default)')
+    .option('-s, --start <date>', 'Start date (yyyy-mm-dd)', MIN_DATE_RETHINKDB)
+    .option('-e, --end <date>', 'End date (yyyy-mm-dd)', MAX_DATE_RETHINKDB)
+    .option('-l, --limit <number>', 'Max number of items', myParseInt, MAX_NUM_ITEMS)
     .description('load article metadata and send them to standard output or a file')
     .action(load)
   );

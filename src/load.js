@@ -19,42 +19,38 @@ export async function load (start, end, options) {
     start, end, { index: 'pub_date', rightBound: 'closed' }
   );
 
-  // Apply filters
-  // const hasAuthorEmail = r.row('author_list').filter(function (author) { return author('emails').ne(null); }).count().gt(0);
-  // // const yearFilter = r.row('journal')('pub_year').match(yearRegex);
-  // // const docOpts = hasAuthorEmail.and(yearFilter);
-  // const docOpts = hasAuthorEmail;
-  // q = q.filter(docOpts);
+  // Filters
+  // Only author-associated email
+  const hasAuthorEmail = r.row('author_list').filter(function (author) { return author('emails').ne(null); }).count().gt(0);
+  const docOpts = hasAuthorEmail;
+  q = q.filter(docOpts);
 
-  // create fields
-  // articleCitation
-  // q = q.merge(function (document) {
-  //   const journal = document('journal');
-  //   const title = r.branch(journal.hasFields('title'), journal('title'), '');
-  //   const month = r.branch(journal.hasFields('pub_month'), r.expr(' ').add(journal('pub_month')), '');
-  //   const year = r.branch(journal.hasFields('pub_year'), r.expr(' ').add(journal('pub_year')), '');
+  // citation field
+  q = q.merge(function (document) {
+    const journal = document('journal');
+    const title = r.branch(journal.hasFields('title'), journal('title'), '');
+    const year = r.expr(' ').add(document('pub_date').year().coerceTo('string'));
 
-  //   return {
-  //     articleCitation: r.expr(title).add(month, year)
-  //   };
-  // });
+    return {
+      articleCitation: r.expr(title).add(year)
+    };
+  });
 
-  // // authorName
-  // q = q.merge(function (document) {
-  //   const lastAuthor = document('author_list').filter(function (author) { return author('emails').ne(null); }).nth(-1);
-  //   // const lastAuthor = document('author_list').nth(-1);
-  //   const emailRecipientAddress = lastAuthor('emails').nth(-1);
-  //   const authorName = lastAuthor('fore_name');
+  // author field
+  q = q.merge(function (document) {
+    const lastAuthor = document('author_list').filter(function (author) { return author('emails').ne(null); }).nth(-1);
+    const emailRecipientAddress = lastAuthor('emails').nth(-1);
+    const authorName = lastAuthor('fore_name');
 
-  //   return {
-  //     authorName,
-  //     emailRecipientAddress
-  //   };
-  // });
+    return {
+      authorName,
+      emailRecipientAddress
+    };
+  });
 
-  // q = q.limit(10);
-  // q = q.pluck(['pmid', 'doi', 'articleCitation', 'authorName', 'emailRecipientAddress']);
-  q = q.pluck(['pmid', 'doi', 'pub_date', 'journal']);
+  q = q.limit(options.limit);
+  q = q.pluck(['pmid', 'doi', 'articleCitation', 'authorName', 'emailRecipientAddress']);
+  // q = q.pluck(['pmid', 'doi', 'articleCitation']);
 
   const cursor = await q.run(conn);
   const data = await cursor.toArray();
