@@ -1,4 +1,4 @@
-import dbdriver from './util/db.js';
+import dbdriver, { MAX_DATE } from './util/db.js';
 
 const loadTable = name => dbdriver.accessTable(name);
 
@@ -10,14 +10,16 @@ const loadTable = name => dbdriver.accessTable(name);
  * @param {object} end end Date
  * @return {object} the corresponding results
  */
-export async function load (start, end, options) {
+export async function load (lastUpdated, start, end, options) {
   const { rethink: r, conn, table } = await loadTable('documents');
   let q = table;
 
-  // Filter by date
+  // Select minimum last updated
   q = q.between(
-    start, end, { index: 'pub_date', rightBound: 'closed' }
+    lastUpdated, MAX_DATE, { index: 'last_updated', rightBound: 'closed' }
   );
+
+  q = q.filter(r.row('pub_date').ge(start).and(r.row('pub_date').le(end)));
 
   // Filters
   // Only author-associated email
@@ -29,7 +31,7 @@ export async function load (start, end, options) {
   q = q.merge(function (document) {
     const journal = document('journal');
     const title = r.branch(journal.hasFields('title'), journal('title'), '');
-    const year = r.expr(' ').add(document('pub_date').year().coerceTo('string'));
+    const year = r.expr(' (').add(document('pub_date').year().coerceTo('string')).add(')');
 
     return {
       articleCitation: r.expr(title).add(year)
@@ -49,8 +51,7 @@ export async function load (start, end, options) {
   });
 
   q = q.limit(options.limit);
-  q = q.pluck(['pmid', 'doi', 'articleCitation', 'authorName', 'emailRecipientAddress']);
-  // q = q.pluck(['pmid', 'doi', 'articleCitation']);
+  q = q.pluck(['pmid', 'doi', 'articleCitation', 'authorName', 'emailRecipientAddress', 'pub_date', 'last_updated']);
 
   const cursor = await q.run(conn);
   const data = await cursor.toArray();

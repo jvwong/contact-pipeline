@@ -2,7 +2,10 @@ import r from 'rethinkdb';
 import fs from 'fs';
 import * as config from '../config.js';
 
-const db = {
+const MAX_DATE = '9999-12-31';
+const MIN_DATE = '1400-01-01';
+
+export default {
   connect: function () {
     if (this.conn) {
       return Promise.resolve(this.conn);
@@ -105,4 +108,7 @@ const db = {
   }
 };
 
-export default db;
+export {
+  MAX_DATE,
+  MIN_DATE
+};

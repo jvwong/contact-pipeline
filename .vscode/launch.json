@@ -12,10 +12,8 @@
       "program": "${workspaceFolder}/contact-pipeline.js",
       "args": [
         "load",
-        "-s",
-        "2022-08-01",
-        "-l",
-        "15"
+        "-u",
+        "2022-08-05"
       ],
       "console": "integratedTerminal"
     }
