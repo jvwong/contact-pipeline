@@ -70,7 +70,6 @@ export async function load (lastUpdated, start, end, options) {
 
   q = q.limit(options.limit);
   q = q.pluck(['pmid', 'doi', 'articleCitation', 'authorName', 'emailRecipientAddress', 'pub_date', 'last_updated']);
-  // q = q.pluck(['pmid', 'doi', 'articleCitation', 'authorName', 'pub_date', 'last_updated']);
 
   const cursor = await q.run(conn);
   const data = await cursor.toArray();
