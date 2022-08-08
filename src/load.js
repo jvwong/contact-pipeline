@@ -14,20 +14,22 @@ export async function load (lastUpdated, start, end, options) {
   const { rethink: r, conn, table } = await loadTable('documents');
   let q = table;
 
-  // Select minimum last updated
+  // Select
+  // Minimum last updated date
   q = q.between(
     lastUpdated, MAX_DATE, { index: 'last_updated', rightBound: 'closed' }
   );
 
-  q = q.filter(r.row('pub_date').ge(start).and(r.row('pub_date').le(end)));
-
   // Filters
-  // Only author-associated email
-  const hasAuthorEmail = r.row('author_list').filter(function (author) { return author('emails').ne(null); }).count().gt(0);
-  const docOpts = hasAuthorEmail;
+  // Required: Has authors
+  const hasAuthorList = r.row.hasFields('author_list');
+  // Options: publication date range
+  const pubDateRangeBetween = r.row('pub_date').ge(start).and(r.row('pub_date').le(end));
+  const docOpts = hasAuthorList.and(pubDateRangeBetween);
   q = q.filter(docOpts);
 
-  // citation field
+  // Pretty
+  // Citation string
   q = q.merge(function (document) {
     const journal = document('journal');
     const title = r.branch(journal.hasFields('title'), journal('title'), '');
@@ -38,11 +40,25 @@ export async function load (lastUpdated, start, end, options) {
     };
   });
 
-  // author field
+  // Author / Email
   q = q.merge(function (document) {
-    const lastAuthor = document('author_list').filter(function (author) { return author('emails').ne(null); }).nth(-1);
-    const emailRecipientAddress = lastAuthor('emails').nth(-1);
-    const authorName = lastAuthor('fore_name');
+    const authorList = document('author_list');
+    const authorsWithEmails = authorList.filter(function (author) { return author('emails').ne(null); });
+    const hasAuthorEmail = authorsWithEmails.count().gt(0);
+
+    const author = r.branch(
+      hasAuthorEmail,
+      authorsWithEmails.nth(-1),
+      authorList.nth(-1)
+    );
+
+    const emailRecipientAddress = r.branch(
+      hasAuthorEmail,
+      authorsWithEmails.nth(-1)('emails').nth(-1),
+      null
+    );
+
+    const authorName = author('fore_name');
 
     return {
       authorName,
@@ -50,8 +66,11 @@ export async function load (lastUpdated, start, end, options) {
     };
   });
 
+  if (!options.all) { q = q.filter(r.row.hasFields('emailRecipientAddress')); }
+
   q = q.limit(options.limit);
   q = q.pluck(['pmid', 'doi', 'articleCitation', 'authorName', 'emailRecipientAddress', 'pub_date', 'last_updated']);
+  // q = q.pluck(['pmid', 'doi', 'articleCitation', 'authorName', 'pub_date', 'last_updated']);
 
   const cursor = await q.run(conn);
   const data = await cursor.toArray();

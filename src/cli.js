@@ -60,6 +60,7 @@ async function main () {
     .option('-s, --start <str>', 'Publication Start date (yyyy-mm-dd)', MIN_DATE)
     .option('-e, --end <str>', 'Publication end date (yyyy-mm-dd)', MAX_DATE)
     .option('-l, --limit <number>', 'Max number of items', myParseInt, MAX_NUM_ITEMS)
+    .option('-a, --all', 'Include all items without author-linked email')
     .option('-o, --output <str>', 'Output file (stdout by default)')
     .description('load article metadata and send them to standard output or a file')
     .action(load)
