@@ -10,7 +10,7 @@ import { MAX_DATE, MIN_DATE } from './util/db.js';
 
 const formatJSON = obj => JSON.stringify(obj, null, 2);
 const printFormattedJSON = obj => console.log(formatJSON(obj));
-const writeFormattedJSON = async (obj, file) => await writeFile(file, formatJSON(obj));
+// const writeFormattedJSON = async (obj, file) => await writeFile(file, formatJSON(obj));
 const writeCsv = async (data, file) => await writeFile(file, data);
 
 const MAX_NUM_ITEMS = 100000;
