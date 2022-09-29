@@ -10,21 +10,21 @@ const loadTable = name => dbdriver.accessTable(name);
  * @param {object} end end Date
  * @return {object} the corresponding results
  */
-export async function load (lastUpdated, start, end, options) {
+export async function load (lastUpdatedStart, lastUpdatedEnd, start, end, options) {
   const { rethink: r, conn, table } = await loadTable('documents');
   let q = table;
 
   // Select
   // Minimum last updated date
   q = q.between(
-    lastUpdated, MAX_DATE, { index: 'last_updated', rightBound: 'closed' }
+    lastUpdatedStart, lastUpdatedEnd, { index: 'last_updated' }
   );
 
   // Filters
   // Required: Has authors
   const hasAuthorList = r.row.hasFields('author_list');
   // Options: publication date range
-  const pubDateRangeBetween = r.row('pub_date').ge(start).and(r.row('pub_date').le(end));
+  const pubDateRangeBetween = r.row('pub_date').ge(start).and(r.row('pub_date').lt(end));
   const docOpts = hasAuthorList.and(pubDateRangeBetween);
   q = q.filter(docOpts);
 

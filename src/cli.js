@@ -34,10 +34,11 @@ function toDate (str) {
 }
 
 async function load (options) {
-  const lastUpdated = toDate(options.lastUpdated);
+  const lastUpdatedStart = toDate(options.lastUpdatedStart);
+  const lastUpdatedEnd = toDate(options.lastUpdatedEnd);
   const startDate = toDate(options.start);
   const endDate = toDate(options.end);
-  const data = await loadImpl(lastUpdated, startDate, endDate, options);
+  const data = await loadImpl(lastUpdatedStart, lastUpdatedEnd, startDate, endDate, options);
   await sendOutput(data, options);
 }
 
@@ -56,7 +57,8 @@ async function main () {
   );
 
   (program.command('load')
-    .option('-u, --last-updated <str>', 'Last updated start date (yyyy-mm-dd)', MIN_DATE)
+    .option('-u, --last-updated-start <str>', 'Last updated start date (yyyy-mm-dd)', MIN_DATE)
+    .option('-m, --last-updated-end <str>', 'Last updated end date (yyyy-mm-dd)', MAX_DATE)
     .option('-s, --start <str>', 'Publication Start date (yyyy-mm-dd)', MIN_DATE)
     .option('-e, --end <str>', 'Publication end date (yyyy-mm-dd)', MAX_DATE)
     .option('-l, --limit <number>', 'Max number of items', myParseInt, MAX_NUM_ITEMS)
