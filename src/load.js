@@ -1,4 +1,4 @@
-import dbdriver, { MAX_DATE } from './util/db.js';
+import dbdriver from './util/db.js';
 
 const loadTable = name => dbdriver.accessTable(name);
 
