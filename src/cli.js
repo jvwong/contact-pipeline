@@ -1,6 +1,6 @@
 #! /usr/bin/env node
 
-// import fs from 'fs';
+import _ from 'lodash';
 import { writeFile } from 'fs/promises';
 import { program } from 'commander';
 import { load as loadImpl } from './load.js';
@@ -42,9 +42,16 @@ async function load (options) {
   await sendOutput(data, options);
 }
 
+const formatInfo = info => {
+  const cleaned = _.omit(info, ['authorName']);
+  cleaned.authorName = info.authorName.replace(/ .*/, '');
+  return cleaned;
+};
+
 async function sendOutput (data, options) {
   if (options.output) {
-    await writeCsv(json2csv(data), options.output);
+    const clean = data.map(formatInfo);
+    await writeCsv(json2csv(clean), options.output);
   } else {
     printFormattedJSON(data);
   }
