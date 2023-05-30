@@ -80,7 +80,15 @@ export async function load (lastUpdatedStart, lastUpdatedEnd, start, end, option
     };
   });
 
-  if (!options.all) { q = q.filter(r.row.hasFields('emailRecipientAddress')); }
+  if (options.email === undefined) {
+    q = q.filter(r.row.hasFields('emailRecipientAddress'));
+  } else if (options.email === 'none') {
+    q = q.filter(r.row.hasFields('emailRecipientAddress').not());
+  } else if (options.email === 'all') {
+    q = q.filter(() => true);
+  } else {
+    throw new Error('Email option not recognized');
+  }
 
   q = q.limit(options.limit);
   q = q.pluck(['pmid', 'doi', 'articleCitation', 'authorName', 'emailRecipientAddress', 'pub_date', 'last_updated']);
