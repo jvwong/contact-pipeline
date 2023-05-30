@@ -44,7 +44,8 @@ async function load (options) {
 
 const formatInfo = info => {
   const cleaned = _.omit(info, ['authorName']);
-  cleaned.authorName = info.authorName.replace(/ .*/, '');
+  const { authorName } = info;
+  if (authorName) cleaned.authorName = authorName.replace(/ .*/, '');
   return cleaned;
 };
 
