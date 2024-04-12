@@ -65,7 +65,7 @@ export default async function elife (options) {
 
   const dates = d => {
     return {
-      created: r.epochTime(d('createdDate')).toISO8601()
+      created: r.epochTime(d('createdDate')).toISO8601().split('T')(0)
     };
   };
 
