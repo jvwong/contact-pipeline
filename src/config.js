@@ -20,7 +20,7 @@ const env = (key, defaultVal) => {
 export const NODE_ENV = env('NODE_ENV', undefined);
 
 // Database
-export const DB_NAME = env('DB_NAME', 'classifier');
+export const DB_NAME = env('DB_NAME', undefined);
 export const DB_HOST = env('DB_HOST', 'localhost');
 export const DB_PORT = env('DB_PORT', 28015);
 export const DB_USER = env('DB_USER', undefined); // username if db uses auth

@@ -3,6 +3,7 @@
 import { program } from 'commander';
 
 import classifierImpl from './classifier.js';
+import elifeImpl from './elife.js';
 import { MAX_DATE, MIN_DATE } from './util/db.js';
 import { toDate, myParseInt } from './util/string.js';
 import { sendOutput } from './util/format.js';
@@ -15,6 +16,11 @@ async function classifier (options) {
   const startDate = toDate(options.start);
   const endDate = toDate(options.end);
   const data = await classifierImpl(lastUpdatedStart, lastUpdatedEnd, startDate, endDate, options);
+  await sendOutput(data, options);
+}
+
+async function elife (options) {
+  const data = await elifeImpl(options);
   await sendOutput(data, options);
 }
 
@@ -34,6 +40,12 @@ async function main () {
     .option('-o, --output <str>', 'Output file (stdout by default)')
     .description('load classifier article metadata and send them to standard output or a file')
     .action(classifier)
+  );
+
+  (program.command('elife')
+    .option('-o, --output <str>', 'Output file (stdout by default)')
+    .description('load elife article metadata and send them to standard output or a file')
+    .action(elife)
   );
 
   await program.parseAsync();
