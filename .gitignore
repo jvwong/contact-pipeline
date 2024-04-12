@@ -109,4 +109,6 @@ dist
 # project
 data/
 
+.DS_Store
+
 
