@@ -10,7 +10,7 @@ const loadTable = name => dbdriver.accessTable(name);
  * @param {object} end end Date
  * @return {object} the corresponding results
  */
-export async function load (lastUpdatedStart, lastUpdatedEnd, start, end, options) {
+export default async function classifier (lastUpdatedStart, lastUpdatedEnd, start, end, options) {
   const { rethink: r, conn, table } = await loadTable('documents');
   let q = table;
 
