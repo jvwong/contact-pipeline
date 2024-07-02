@@ -12,7 +12,7 @@ const formatDate = d => {
 const formatSummary = summary => {
   const { uid, history, source } = summary;
   const output = _.assign({}, { uid, source });
-  const statuses = ['accepted', 'medline', 'pubmed'];
+  const statuses = ['accepted', 'pubmed'];
   statuses.forEach(status => {
     const item = _.find(history, ['pubstatus', status]);
     if (item) {
