@@ -4,9 +4,10 @@ import { program } from 'commander';
 
 import classifierImpl from './classifier.js';
 import elifeImpl from './elife.js';
+import historyImpl from './history.js';
 import { MAX_DATE, MIN_DATE } from './util/db.js';
 import { toDate, myParseInt } from './util/string.js';
-import { sendOutput } from './util/format.js';
+import { sendOutput, json2csv, formatInfo } from './util/format.js';
 
 const MAX_NUM_ITEMS = 100000;
 
@@ -15,12 +16,19 @@ async function classifier (options) {
   const lastUpdatedEnd = toDate(options.lastUpdatedEnd);
   const startDate = toDate(options.start);
   const endDate = toDate(options.end);
-  const data = await classifierImpl(lastUpdatedStart, lastUpdatedEnd, startDate, endDate, options);
+  let data = await classifierImpl(lastUpdatedStart, lastUpdatedEnd, startDate, endDate, options);
+  data = data.map(formatInfo);
   await sendOutput(data, options);
 }
 
 async function elife (options) {
-  const data = await elifeImpl(options);
+  let data = await elifeImpl(options);
+  data = data.map(formatInfo);
+  await sendOutput(data, options);
+}
+
+async function history (id, options) {
+  const data = await historyImpl(id, options);
   await sendOutput(data, options);
 }
 
@@ -46,6 +54,13 @@ async function main () {
     .option('-o, --output <str>', 'Output file (stdout by default)')
     .description('load elife article metadata and send them to standard output or a file')
     .action(elife)
+  );
+
+  (program.command('history')
+    .argument('<string>', 'string to split')
+    .option('-o, --output <str>', 'Output file (stdout by default)')
+    .description('Retrieve publication history dates for a list of pubmed ids')
+    .action(history)
   );
 
   await program.parseAsync();

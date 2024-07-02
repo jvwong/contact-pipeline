@@ -1,3 +1,5 @@
+import fetch from 'node-fetch';
+
 const failOnBadStatus = res => {
   if (!res.ok) {
     throw new Error(`Fetch failed due to bad status code : ${res.statusText} : ${res.url}`);

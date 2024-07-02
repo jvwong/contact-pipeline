@@ -25,8 +25,7 @@ export const formatInfo = info => {
 
 export async function sendOutput (data, options) {
   if (options.output) {
-    const clean = data.map(formatInfo);
-    await writeCsv(json2csv(clean), options.output);
+    await writeCsv(json2csv(data), options.output);
   } else {
     printFormattedJSON(data);
   }

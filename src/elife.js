@@ -69,9 +69,13 @@ export default async function elife (options) {
     };
   };
 
-  const emailProvided = d => {
+  const providedNameEmail = d => {
+    const name = d('provided')('name').default('').split(' ');
+    const names = name.count();
     return {
-      emailProvided: d('provided')('authorEmail')
+      email: d('provided')('authorEmail'),
+      foreName: r.branch(names.gt(0), name.nth(0), null),
+      lastName: r.branch(names.gt(1), name.nth(-1), null)
     };
   };
 
@@ -91,9 +95,9 @@ export default async function elife (options) {
   q = q.merge(dates);
 
   // Author / Email
-  q = q.merge(emailProvided);
+  q = q.merge(providedNameEmail);
 
-  q = q.pluck(['id', 'title', 'journal', 'created', 'status', 'pmid', 'doi', 'emailProvided', 'type']);
+  q = q.pluck(['id', 'title', 'journal', 'created', 'status', 'pmid', 'doi', 'email', 'foreName', 'lastName', 'type']);
 
   const cursor = await q.run(conn);
   const data = await cursor.toArray();
